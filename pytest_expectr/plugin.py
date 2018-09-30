@@ -41,6 +41,18 @@ def _log_assert(node, message='None'):
     )
 
 
+@pytest.mark.hookwrapper
+def pytest_runtest_makereport(item, call):
+    outcome = yield
+    asserts_list = outcome.get_result()
+    if (call.when == "call") and hasattr(item, 'failed_assert'):
+        item.failed_assert.append(
+            'Failed Expectations:%s' % len(item.failed_assert)
+        )
+        asserts_list.longrepr = '\n'.join(item.failed_assert)
+        asserts_list.outcome = "failed"
+
+
 @pytest.fixture
 def expect(request):
     'This fixture is used to expect multiple assert'
@@ -53,15 +65,3 @@ def expect(request):
             _log_assert(request.node, message)
 
     return _expect
-
-
-@pytest.mark.hookwrapper
-def pytest_runtest_makereport(item, call):
-    outcome = yield
-    asserts_list = outcome.get_result()
-    if (call.when == "call") and hasattr(item, 'failed_assert'):
-        item.failed_assert.append(
-            'Failed Expectations:%s' % len(item.failed_assert)
-        )
-        asserts_list.longrepr = '\n'.join(item.failed_assert)
-        asserts_list.outcome = "failed"
