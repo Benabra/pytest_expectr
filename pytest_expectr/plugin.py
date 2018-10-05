@@ -24,6 +24,7 @@ def _log_assert(node, message='None'):
     :param node: object
     :param message: string
     '''
+    # inspect.getframeinfo(frame[0])
     (file_name, line, test_name, contexts) = inspect.stack()[2][1:5]
     context = contexts[0].replace('        ', '')
 
@@ -31,7 +32,7 @@ def _log_assert(node, message='None'):
         node.failed_assert = []
 
     node.failed_assert.append(
-        '    def %s():\n        ...\n%s:>      %s%s\n\n%s:%s: %s\n' % (
+        '    def %s():\n        ...\n%s:>     %s%s\n\n%s:%s: %s\n' % (
             color(test_name, 'bold'),
             line, color(context, 'bold'),
             color('E       AssertionError: %s' % message, 'red'),
