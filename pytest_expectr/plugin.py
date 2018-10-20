@@ -16,7 +16,7 @@ def color(msg, color):
     :return: string
     '''
     sting_format = {'red': '\033[91m', 'bold': '\033[1m'}
-    return '%s%s%s' % (sting_format[color], msg, '\033[0m')
+    return '{}{}{}'.format(sting_format[color], msg, '\033[0m')
 
 
 def _log_assert(node, message='None'):
@@ -32,11 +32,11 @@ def _log_assert(node, message='None'):
         node.failed_assert = []
 
     node.failed_assert.append(
-        '    def %s():\n        ...\n%s:>     %s%s\n\n%s:%s: %s\n' % (
+        '    def {}():\n        ...\n{}:>     {}{}\n\n{}:{}: {}\n'.format(
             color(test_name, 'bold'),
             line, color(context, 'bold'),
-            color('E       AssertionError: %s' % message, 'red'),
-            color('%s' % file_name, 'red'),
+            color('E       AssertionError: {}'.format(message), 'red'),
+            color('{}'.format(file_name), 'red'),
             line, 'AssertionError'
         )
     )
@@ -48,7 +48,7 @@ def pytest_runtest_makereport(item, call):
     asserts_list = outcome.get_result()
     if (call.when == "call") and hasattr(item, 'failed_assert'):
         item.failed_assert.append(
-            'Failed Expectations:%s' % len(item.failed_assert)
+            'Failed Expectations:{}'.format(len(item.failed_assert))
         )
         asserts_list.longrepr = '\n'.join(item.failed_assert)
         asserts_list.outcome = "failed"
